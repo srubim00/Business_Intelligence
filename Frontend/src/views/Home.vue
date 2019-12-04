@@ -1,8 +1,8 @@
 <template>
 <div id="app">
-  <v-app id="inspire" style="background:grey">
+  <v-app id="inspire" style="background:red lighten-4">
   <v-snackbar
-      v-model="snackbar"
+      v-model="snackbarUsuario"
       :timeout="timeout"
       color="error"
       top center
@@ -11,12 +11,26 @@
       <v-btn
         color="blue"
         text
-        @click="snackbar = false"
+        @click="snackbarUsuario = false"
       >
         Close
       </v-btn>
     </v-snackbar>
-    
+      <v-snackbar
+      v-model="snackbarPizza"
+      :timeout="timeout"
+      color="success"
+      top center
+    >
+      {{ textPizza }}
+      <v-btn
+        color="blue"
+        text
+        @click="snackbarPizza = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
 
     <v-app-bar
       app
@@ -151,17 +165,175 @@
     </v-carousel>
  
 </v-content >
+ 
+
+<v-content v-if="bool_login" >
+<v-layout justify-center align-center><img src="../assets/logofinalsinfondo.png" height="220px"  position="center"/></v-layout>
+
+  <v-layout justify-center align-center><v-spacer></v-spacer><v-spacer></v-spacer>
+    <v-btn @click="recomendarMio" >Mi agenda.</v-btn><v-spacer></v-spacer>
+    <v-btn @click="puntuando=false, recomendandoYo=false, recomendandoResto=false, recomendandoIngre=true, aleatorio=false , array=[]">Recomendar por ingredientes.</v-btn><v-spacer></v-spacer>
+    <v-btn @click="puntuando=true, recomendandoYo=false, recomendandoResto=false, recomendandoIngre=false, aleatorio=false">Puntuar Pizza</v-btn><v-spacer></v-spacer>
+    <v-btn @click="pedirAleatoria">Pedir Aleatoria</v-btn><v-spacer></v-spacer>
+    <v-btn @click="recomendarGente">Recomendar por valoraciones.</v-btn><v-spacer></v-spacer><v-spacer></v-spacer>
+
+     
+    
+</v-layout>
+<v-content v-if="aleatorio">
+      <v-container grid-list-md text-xs-center fluid pa-12>
+        <v-layout row wrap fill-height fill-width>
+          <v-flex v-for="(item, index) in array" v-bind:key="index">
+            <v-card
+              elevation="18"
+              dark
+              style="background: #3A1C71;
+    background: -webkit-linear-gradient(to right, #F94242, #F94242, #F94242);
+    background: linear-gradient(to right,  #F94242, #F94242, #F94242);"
+            >
+              <v-card-title>{{item.nombre}}</v-card-title>
+              <v-card-subtitle>
+                Pizzería: {{item.pizzeria}}
+                 <br />
+                Dirección: {{item.direccion}}
+                <br />
+                Telefono: {{item.telefono}}
+                <br />
+              </v-card-subtitle>
+              
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>  
+
+
+    <v-content v-if="recomendandoYo">
+      <v-container grid-list-md text-xs-center fluid pa-12>
+        <v-layout row wrap fill-height fill-width>
+          <v-flex v-for="(item, index) in array" v-bind:key="index">
+            <v-card
+              elevation="18"
+              dark
+              style="background: #3A1C71;
+    background: -webkit-linear-gradient(to right, #F94242, #F94242, #F94242);
+    background: linear-gradient(to right,  #F94242, #F94242, #F94242);"
+            >
+              <v-card-title>{{item.nombre}}</v-card-title>
+              <v-card-subtitle>
+                Pizzería: {{item.pizzeria}}
+                 <br />
+                Dirección: {{item.direccion}}
+                <br />
+                Telefono: {{item.telefono}}
+                <br />
+                Puntuación: {{item.puntuacion}}
+                <br />
+              </v-card-subtitle>
+              
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>  
+
+
+    <v-content v-if="recomendandoIngre">
     
 
-<v-content v-if="bool_login">
+      <v-container grid-list-md text-xs-center fluid pa-12>
+      <v-select
+          v-model="e2"
+          :items="ingredientes"
+          menu-props="auto"
+          label="Ingrediente preferido:"
+          hide-details
+        ></v-select>
+        <v-btn @click="recomendarIngre">Recomendar por valoraciones.</v-btn>
+        <v-layout row wrap fill-height fill-width>
+          <v-flex v-for="(item, index) in array" v-bind:key="index">
+            <v-card
+              @click.native="pedirIngredientes(item)"
+              elevation="18"
+              dark
+              style="background: #3A1C71;
+    background: -webkit-linear-gradient(to right, #F94242, #F94242, #F94242);
+    background: linear-gradient(to right,  #F94242, #F94242, #F94242);"
+            >
+              <v-card-title>{{item.nombre}}</v-card-title>
+              <v-card-subtitle>
+                Pizzería: {{item.pizzeria}}
+                 <br />
+                Dirección: {{item.direccion}}
+                <br />
+                Telefono: {{item.telefono}}
+                <br />
+              </v-card-subtitle>
+              <v-card-actions>
+              <v-btn  @click= "pedirIngredientes(item)" > Mas Info </v-btn>
+     
+    </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>  
+          <v-dialog v-model="d_ingredientes" max-width="550px" persistent>
+            <v-card>
+              <v-card-title>
+                <span class="headline">Ingredientes:</span>
+              </v-card-title>
 
-<img src="../assets/logofinalsinfondo.jpg" />
-<v-flex mb-4>
-    <v-btn @click="X">Recomendar por mis gustos.</v-btn>
-    <v-btn>Recomendar por ingredientes.</v-btn>
-    <v-btn>Recomendar por valoraciones.</v-btn>
-    <v-btn></v-btn>
-</v-flex>
+              <v-card-text>
+
+                <v-divider></v-divider>
+
+                <br>
+                <h3>Ingredientes utilizados:</h3>
+                <br>
+                  <li v-for="ing in arrayIngredientes" v-bind:key=ing>
+                      {{ ing }}
+                    </li>
+                <br>
+
+                <v-divider></v-divider>
+
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <!-- Boton que Cancela el Registro -->
+                <v-btn color="blue darken-1" flat @click="d_ingredientes=false">OK</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+<v-content v-if="puntuando" justify-center align-center>
+      <v-container grid-list-md text-xs-center fluid pa-12 align-center justify-center>
+      
+        <v-col cols="3" sm="5" >
+          <v-select
+          v-model="e1"
+          :items="pizzas"
+          menu-props="auto"
+          label="Nombre de la Pizza:"
+          hide-details
+        ></v-select>
+
+        </v-col> <v-col cols="2" sm="3">
+          <v-text-field  v-model="puntuacion" type=number label="Puntuación(1-10)" min="0" max="10" >
+                      </v-text-field>
+        </v-col>
+        <v-col cols="2" sm="3">
+          <v-btn @click="puntuar" right>Puntuar</v-btn>
+        </v-col>
+        
+        
+        
+        
+        
+      </v-container>
+    </v-content>
+
 </v-content>
     <v-footer
       color="black"
@@ -180,6 +352,14 @@
 export default {
   name: 'home',
  data: () => ({
+   e1:'Pizza Rock',
+   array:[],
+   arrayIngredientes:[],
+   element:{},
+   pizzerias:[],
+   ingredientes:['Queso Parmesano','Queso Cheddar','Queso Azul','Queso Cabra','Piña','Jamón York','Jamón Serrano','Jamón Cocido','Jamón Dulce',
+   'Jamón Asado','Aceitunas','Pollo','Champiñones','Cebolla','Beicon','Salchicha','Espinacas','Atún','Pimientos','Rúcula','Cecina',
+   'Chorizo','Guindilllas','Orégano','Anchoas','Jalapeños','Huevo','Ajo','Salsa Barbacoa','Berenjena','Calabacín','Maíz','Alcachofa'],
    items: [
           {
             position:"botttom",
@@ -198,12 +378,30 @@ export default {
             src: 'https://ladarsenacm.com/wp-content/uploads/2018/05/anunciate-aqui-2.jpg',
           },
       ],
-      snackbar: false,
+      ingrediente:"", 
+      d_ingredientes:false,
+      alergia: false,
+      pizzas:['Pizza Rock','Pizza Pazza','Carabi',
+      'Dolores','Hermelinda','Leónida','Leonesa','Funghi',
+      'Estativa','Barbacoa','Napoli','Romana','Tartufata','Al tonno',
+      'Peperoni Hot','Diavola','Calzone','Ananas','Napolitana','Popeye',
+      'Paisana','Hawaiana','Cremozza','Oklahoma Bacon Crispy','Pata Negra','Carabi',
+      'Campiña Pan','Gárgolas','Románica','Vidrieras','Carabi','Rigoletto',
+      'Nostra','Capri'],
+      snackbarUsuario: false,
+      snackbarPizza:false,
       text: 'Usuario y/o contraseña incorrecta.',
+      textPizza:'Su puntuación se ha realizado correctamente',
       timeout: 3000,
+      puntuando: false,
+      recomendandoYo:false,
+      recomendandoResto:false,
+      aleatorio:false,
+      recomendandoIngre:false,
     drawer: null,
     d_registrarse: false,
     nacimiento_registrar:1900,
+    puntuacion:0,
     nombrecompleto_registrar:"",
     nombre_registrar:"",
     pass_registrar: "",
@@ -257,6 +455,8 @@ methods: {
         this.user = this.nombre_registrar;
         this.password = this.pass_registrar;
         this.bool_login = true;
+        var color= document.getElementById("inspire");
+        color.style.backgroundColor="#FFF3E0";
         this.cerrar_registrar();
 
       }, response => {
@@ -292,12 +492,14 @@ methods: {
         this.$http.post('http://localhost:3000/login', data).then(response => {
 
           if(response.body.message==false){
-            this.snackbar=true;
+            this.snackbarUsuario=true;
 
           }
           else{
              this.bool_login = true;
              this.usuario=response.body.usuario;
+             var color= document.getElementById("inspire");
+             color.style.backgroundColor="#FFF3E0";
           }
             
           
@@ -306,6 +508,126 @@ methods: {
           alert(JSON.stringify(response.body));
         });
       }
+    },
+
+    puntuar() {
+        
+        var data={user:this.user,pizza:this.e1,puntuacion:this.puntuacion};
+        this.recomendandoYo=false;
+        this.recomendandoResto=false;
+        this.recomendandoIngre=false;
+        this.aleatorio=false;
+        
+    
+        this.$http.post('http://localhost:3000/puntuar', data).then(response => {
+
+          if(response.body.message==true){
+            this.snackbarPizza=true;
+
+
+          }
+
+            
+          
+
+        }, response => {
+          alert(JSON.stringify(response.body));
+        });
+      
+    },
+   /* pedirPizzeria() {
+        
+        //var data={user:this.user,password:this.password};
+        this.pizzerias=[];
+        var data={pizza:this.array[0].nombre};        
+    
+        this.$http.post('http://localhost:3000/pizzeria', data).then(response => {
+          this.array[0].Pizzeria=response.body.nombre;
+          this.array[0].Direccion=response.body.direccion;
+          this.array[0].Telefono=response.body.telefono;
+
+
+         
+          
+
+        }, response => {
+          alert(JSON.stringify(response.body));
+        });
+      
+    },*/
+
+    pedirAleatoria() {
+
+        //var data={user:this.user,password:this.password};
+        this.array=[];
+        var data={user:this.user,password:this.password};
+        this.recomendandoYo=false;
+        this.recomendandoResto=false;
+        this.recomendandoIngre=false;
+        this.puntuando=false;
+        this.aleatorio= true;
+        
+    
+        this.$http.post('http://localhost:3000/aleatoria', data).then(response => {
+          this.array.push(response.body);            
+          
+
+        }, response => {
+          alert(JSON.stringify(response.body));
+        });
+      
+    },
+
+
+    recomendarMio(){
+        
+        this.array=[];
+        var data={user:this.user};
+        this.recomendandoYo=true;
+        this.recomendandoResto=false;
+        this.recomendandoIngre=false;
+        this.puntuando=false;
+        this.aleatorio= false;
+        
+    
+        this.$http.post('http://localhost:3000/mio', data).then(response => {
+          this.array=response.body;            
+
+        }, response => {
+          alert(JSON.stringify(response.body));
+        });
+    },
+
+    recomendarIngre(){
+        
+        this.array=[];
+        var data={user:this.user, ingrediente: this.e2, alergia: this.alergia};
+        this.recomendandoYo=false;
+        this.recomendandoResto=false;
+        this.recomendandoIngre=true;
+        this.puntuando=false;
+        this.aleatorio= false;
+        
+    
+        this.$http.post('http://localhost:3000/ingrediente', data).then(response => {
+          this.array=response.body;            
+
+        }, response => {
+          alert(JSON.stringify(response.body));
+        });
+    },
+        pedirIngredientes(ite){
+        
+        var data={user:this.user, pizza: ite.nombre};     
+        this.arrayIngredientes=[];   
+        this.d_ingredientes=true;
+    
+        this.$http.post('http://localhost:3000/item', data).then(response => {
+          this.arrayIngredientes=response.body;            
+
+        }, response => {
+          alert(JSON.stringify(response.body));
+        });
     },
 
     /**
@@ -327,6 +649,8 @@ methods: {
 
       this.tooltip = false;
       this.show1 = false;
+      var color= document.getElementById("inspire");
+      color.style.backgroundColor="grey";
     }
   }
 }
