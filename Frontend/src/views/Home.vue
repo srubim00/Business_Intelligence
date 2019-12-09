@@ -9,7 +9,7 @@
     >
       {{ text }}
       <v-btn
-        color="blue"
+        color="black"
         text
         @click="snackbarUsuario = false"
       >
@@ -24,7 +24,7 @@
     >
       {{ textPizza }}
       <v-btn
-        color="blue"
+        color="black"
         text
         @click="snackbarPizza = false"
       >
@@ -32,6 +32,21 @@
       </v-btn>
     </v-snackbar>
 
+      <v-snackbar
+      v-model="snackbarPuntuar"
+      :timeout="timeout"
+      color="error"
+      top center
+    >
+      {{ textPuntuar }}
+      <v-btn
+        color="black"
+        text
+        @click="snackbarPuntuar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
     <v-app-bar
       app
       color="black"
@@ -170,16 +185,75 @@
 <v-content v-if="bool_login" >
 <v-layout justify-center align-center><img src="../assets/logofinalsinfondo.png" height="220px"  position="center"/></v-layout>
 
-  <v-layout justify-center align-center><v-spacer></v-spacer><v-spacer></v-spacer>
-    <v-btn @click="recomendarMio" >Mi agenda.</v-btn><v-spacer></v-spacer>
-    <v-btn @click="puntuando=false, recomendandoYo=false, recomendandoResto=false, recomendandoIngre=true, aleatorio=false , array=[]">Recomendar por ingredientes.</v-btn><v-spacer></v-spacer>
-    <v-btn @click="puntuando=true, recomendandoYo=false, recomendandoResto=false, recomendandoIngre=false, aleatorio=false">Puntuar Pizza</v-btn><v-spacer></v-spacer>
-    <v-btn @click="pedirAleatoria">Pedir Aleatoria</v-btn><v-spacer></v-spacer>
-    <v-btn @click="recomendarGente">Recomendar por valoraciones.</v-btn><v-spacer></v-spacer><v-spacer></v-spacer>
+  <v-layout justify-center align-center>
 
-     
+  <v-card height="100px" width="1110px" ><v-spacer></v-spacer>
+  <v-toolbar color="#F5AC18" height="100px" width="1110px" >
+    <v-btn @click="recomendarMio" color= "#F7C662">Mi agenda</v-btn><v-spacer></v-spacer>
+    <v-btn color= "#F7C662" @click="puntuando=false, recomendandoYo=false, recomendandoResto=false, recomendandoIngre=true, aleatorio=false ,recomendandoGente=false, array=[]">Recomendar por ingredientes</v-btn><v-spacer></v-spacer>
+    <v-btn color= "#F7C662" @click="puntuando=true, recomendandoYo=false, recomendandoResto=false, recomendandoIngre=false, recomendandoGente=false, aleatorio=false">Puntuar Pizza</v-btn><v-spacer></v-spacer>
+    <v-btn color= "#F7C662" @click="pedirAleatoria">Pedir Aleatoria</v-btn><v-spacer></v-spacer>
+    <v-btn color= "#F7C662" @click="recomendarGente">Recomendar por valoraciones</v-btn><v-spacer></v-spacer><v-spacer></v-spacer>
+  </v-toolbar> </v-card>
+  </v-layout>
+ 
+     <v-content v-if="recomendandoIngre">
     
-</v-layout>
+
+      <v-container grid-list-md text-xs-center fluid pa-12 align-center justify-center>
+       <v-layout wrap text-center align-center justify-center>
+       <v-card height="100px" width="750px" color="#F79C4F">
+      
+      <v-toolbar height="100px" width="750px" color="#F79C4F">
+      <v-toolbar-title>
+        <v-select
+        
+        outlined
+          v-model="e2"
+          :items="ingredientes"
+          menu-props="auto"
+          label="Ingrediente preferido:"
+          hide-details
+        ></v-select>
+        </v-toolbar-title><v-spacer></v-spacer>
+        <v-toolbar-title>
+          <v-btn color="#F7C662" @click="recomendarIngre">Buscar por ingrediente</v-btn>
+        </v-toolbar-title>
+        </v-toolbar>
+        </v-card>
+        </v-layout>
+         </v-container>
+        <v-container grid-list-md text-xs-center fluid pa-12 >
+        <v-layout row wrap fill-height fill-width>
+          <v-flex v-for="(item, index) in array" v-bind:key="index">
+            <v-card
+              @click.native="pedirIngredientes(item)"
+              elevation="18"
+              dark
+              style="background: #3A1C71;
+    background: -webkit-linear-gradient(to right, #F94242, #F94242, #F94242);
+    background: linear-gradient(to right,  #F94242, #F94242, #F94242);"
+            >
+              <v-card-title>{{item.nombre}}</v-card-title>
+              <v-card-subtitle>
+                Pizzería: {{item.pizzeria}}
+                 <br />
+                Dirección: {{item.direccion}}
+                <br />
+                Telefono: {{item.telefono}}
+                <br />
+              </v-card-subtitle>
+              <v-card-actions>
+              <v-btn  color="#F79C4F" depressed @click= "pedirIngredientes(item)" > Mas Info </v-btn>
+     
+    </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>  
+    
+
 <v-content v-if="aleatorio">
       <v-container grid-list-md text-xs-center fluid pa-12>
         <v-layout row wrap fill-height fill-width>
@@ -200,7 +274,10 @@
                 Telefono: {{item.telefono}}
                 <br />
               </v-card-subtitle>
-              
+            <v-card-actions>
+              <v-btn  color="#F79C4F" @click= "pedirIngredientes(item)" > Mas Info </v-btn>
+     
+            </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
@@ -230,30 +307,21 @@
                 Puntuación: {{item.puntuacion}}
                 <br />
               </v-card-subtitle>
-              
+              <v-card-actions>
+              <v-btn  color="#F79C4F" @click= "pedirIngredientes(item)" > Mas Info </v-btn>
+     
+            </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
       </v-container>
     </v-content>  
 
-
-    <v-content v-if="recomendandoIngre">
-    
-
+    <v-content v-if="recomendandoGente">
       <v-container grid-list-md text-xs-center fluid pa-12>
-      <v-select
-          v-model="e2"
-          :items="ingredientes"
-          menu-props="auto"
-          label="Ingrediente preferido:"
-          hide-details
-        ></v-select>
-        <v-btn @click="recomendarIngre">Recomendar por valoraciones.</v-btn>
         <v-layout row wrap fill-height fill-width>
-          <v-flex v-for="(item, index) in array" v-bind:key="index">
+          <v-flex v-for="(item, index) in definitivo" v-bind:key="index">
             <v-card
-              @click.native="pedirIngredientes(item)"
               elevation="18"
               dark
               style="background: #3A1C71;
@@ -268,16 +336,21 @@
                 <br />
                 Telefono: {{item.telefono}}
                 <br />
+                Puntuación: {{item.puntuacion}}
+                <br />
               </v-card-subtitle>
               <v-card-actions>
-              <v-btn  @click= "pedirIngredientes(item)" > Mas Info </v-btn>
+              <v-btn  color="#F79C4F" @click= "pedirIngredientes(item)" > Mas Info </v-btn>
      
-    </v-card-actions>
+            </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
       </v-container>
     </v-content>  
+
+
+    
           <v-dialog v-model="d_ingredientes" max-width="550px" persistent>
             <v-card>
               <v-card-title>
@@ -291,7 +364,7 @@
                 <br>
                 <h3>Ingredientes utilizados:</h3>
                 <br>
-                  <li v-for="ing in arrayIngredientes" v-bind:key=ing>
+                  <li v-for="ing in arrayIngredientes" v-bind:key="ing">
                       {{ ing }}
                     </li>
                 <br>
@@ -307,32 +380,55 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+
 <v-content v-if="puntuando" justify-center align-center>
       <v-container grid-list-md text-xs-center fluid pa-12 align-center justify-center>
+       <v-layout wrap text-center align-center justify-center>
+       <v-card height="100px" width="750px" color="#F79C4F">
       
-        <v-col cols="3" sm="5" >
-          <v-select
+      <v-toolbar height="100px" width="750px" color="#F79C4F">
+      <v-toolbar-title>
+        <v-select
+        outlined
           v-model="e1"
           :items="pizzas"
           menu-props="auto"
           label="Nombre de la Pizza:"
           hide-details
         ></v-select>
-
-        </v-col> <v-col cols="2" sm="3">
-          <v-text-field  v-model="puntuacion" type=number label="Puntuación(1-10)" min="0" max="10" >
-                      </v-text-field>
-        </v-col>
-        <v-col cols="2" sm="3">
-          <v-btn @click="puntuar" right>Puntuar</v-btn>
-        </v-col>
-        
-        
-        
-        
-        
-      </v-container>
+        </v-toolbar-title><v-spacer></v-spacer>
+        <v-toolbar-title>
+         <v-text-field   v-model="puntuacion" type=number label="Puntuación(1-10)" min="0" max="10" ></v-text-field>
+        </v-toolbar-title><v-spacer></v-spacer>
+        <v-toolbar-title>
+         <v-btn color="#F7C662" @click="puntuar" right>Puntuar</v-btn>
+        </v-toolbar-title>
+        </v-toolbar>
+        </v-card>
+        </v-layout>
+         </v-container>
+      
     </v-content>
+    <v-content v-if="recomendandoResto" justify-center align-center>
+      <v-container grid-list-md text-xs-center fluid pa-12 align-center justify-center>
+       <v-layout wrap text-center align-center justify-center>
+       <v-card height="100px" width="575px" color="#F79C4F">
+      
+      <v-toolbar height="100px" width="575px" color="#F79C4F" class="font-weight-black">
+      Ordenar de:<v-spacer></v-spacer>
+      <v-toolbar-title>
+        <v-btn color="#F7C662" @click="ordenarArray(1)" >Mayor-Menor</v-btn>
+        </v-toolbar-title><v-spacer></v-spacer>
+        <v-toolbar-title>
+         <v-btn color="#F7C662" @click="ordenarArray(2)" >Menor-Mayor </v-btn>
+        </v-toolbar-title>
+        </v-toolbar>
+        </v-card>
+        </v-layout>
+         </v-container>
+      
+    </v-content>
+
 
 </v-content>
     <v-footer
@@ -352,8 +448,8 @@
 export default {
   name: 'home',
  data: () => ({
-   e1:'Pizza Rock',
    array:[],
+   definitivo:[],
    arrayIngredientes:[],
    element:{},
    pizzerias:[],
@@ -367,15 +463,11 @@ export default {
           },
           {
             position:"bottom",
-            src: 'https://www.reasonwhy.es/sites/default/files/dominos-pizza.jpg',
+            src: 'https://roelpizza.com/templates/yootheme/cache/pizzeria-sant-cugat-a-domicilio-ae934bee.jpeg',
           },
           {
             position:"bottom",
-            src: 'https://odd-prod.gfrcdn.net/ODD/images//e19ed78d-8bc7-4a5a-94e4-13dfea33f46a/7ad2e9aa.jpg',
-          },
-          {
-            position:"bottom",
-            src: 'https://ladarsenacm.com/wp-content/uploads/2018/05/anunciate-aqui-2.jpg',
+            src: 'https://1.bp.blogspot.com/-xtIbsJiLQuY/WoloDM2d6hI/AAAAAAABbeU/W0sOPK5kAvwN7bFBxIjX77iVb0MDkETQQCK4BGAYYCw/s1600/anunciate.gif',
           },
       ],
       ingrediente:"", 
@@ -390,10 +482,14 @@ export default {
       'Nostra','Capri'],
       snackbarUsuario: false,
       snackbarPizza:false,
+      snackbarPuntuar:false,
       text: 'Usuario y/o contraseña incorrecta.',
       textPizza:'Su puntuación se ha realizado correctamente',
+      textPuntuar:"Puntuación= (min 0 - max 10) y debe escoger una pizza",
       timeout: 3000,
       puntuando: false,
+      segundaFase:false,
+      ordenadoArray:false,
       recomendandoYo:false,
       recomendandoResto:false,
       aleatorio:false,
@@ -407,20 +503,10 @@ export default {
     pass_registrar: "",
     user: "",
     password: "",
-    currentTab: 'Personajes',
-    tabs: ['Personajes', 'Partidas', 'Mapas'],
-    listaPersonajes: [],
-    listaPartidas: [],
-    listaMapas: [],
-    expand: false,
     bool_login: false,
     show1: false, // Visibilidad contraseña login
     show2: false, // Visibilidad contraseña registrar
-    list: {
-      0: false,
-      1: false,
-      2: false
-    },
+    
     /* Reglas aplicadas a los campos de usuario y contraseña para entrar en la aplicacion */
     rules: {
       required: value => !!value || 'Requerido.',
@@ -429,11 +515,7 @@ export default {
     },
     tooltip: false,
   }),
-  computed: {
-    currentTabComponent: function () {
-      return 'tab-' + this.currentTab.toLowerCase()
-    }
-  },
+
 methods: {
 
     /**
@@ -476,6 +558,7 @@ methods: {
       this.pass_registrar = "";
       this.d_registrarse = false;
       this.show2 = false;
+      this.array=[];
     },
 
     /**
@@ -485,7 +568,15 @@ methods: {
      *  - Si existe en la base de datos, muestra los datos guardados en la base de datos de ese usuario
      */
     login() {
-
+      
+        this.array=[];
+        this.recomendandoYo=false;
+        this.recomendandoResto=false;
+        this.recomendandoIngre=false;
+        this.puntuando=false;
+        this.aleatorio= false;
+        this.recomendandoGente=false;
+        this.ordenadoArray=false;
       if (this.user !== null && this.password !== null) {
         var data={user:this.user,password:this.password};
 
@@ -512,49 +603,134 @@ methods: {
 
     puntuar() {
         
-        var data={user:this.user,pizza:this.e1,puntuacion:this.puntuacion};
+        this.array=[];
+        
         this.recomendandoYo=false;
         this.recomendandoResto=false;
         this.recomendandoIngre=false;
         this.aleatorio=false;
-        
-    
-        this.$http.post('http://localhost:3000/puntuar', data).then(response => {
+        this.ordenadoArray=false;
+        this.recomendandoGente=false;
+        var pas=true;
+        var cadena=this.puntuacion.toString();
+        var i=0;
 
-          if(response.body.message==true){
-            this.snackbarPizza=true;
-
-
+        for(i=0;i<cadena.length;i++){
+          if(cadena.charAt(i)=='.' || cadena.charAt(i)==','){
+            pas=false;
+            i=cadena.length
           }
+        }
+        
+    if(this.puntuacion<=10 && this.puntuacion>=0 && this.e1!=undefined && pas==true){
+     
+      var data={user:this.user,pizza:this.e1,puntuacion:this.puntuacion};
+        this.$http.post('http://localhost:3000/puntuar', data).then(response => {
+            if(response.body.message==true){
+                this.snackbarPizza=true;
+            }
 
-            
-          
-
-        }, response => {
-          alert(JSON.stringify(response.body));
-        });
+         }, response => {
+            alert(JSON.stringify(response.body));
+         });
+    }else{
+        this.snackbarPuntuar=true;
+    }
+        
       
     },
-   /* pedirPizzeria() {
+    ordenarArray(par){
+             
+     //   var par=1;
+                 var i=0;
+                 //alert(this.array[0].puntuacion);
+          var j=0;
         
-        //var data={user:this.user,password:this.password};
-        this.pizzerias=[];
-        var data={pizza:this.array[0].nombre};        
+          var aux;
     
-        this.$http.post('http://localhost:3000/pizzeria', data).then(response => {
-          this.array[0].Pizzeria=response.body.nombre;
-          this.array[0].Direccion=response.body.direccion;
-          this.array[0].Telefono=response.body.telefono;
-
-
-         
+          var q={};
+          this.definitivo=[];
+          var pun=0.0;
+          var veces=0;
+          for( i=0;i<this.array.length;i++){
+           if(JSON.stringify(q)=='{}'){
+             //alert(this.array[i].puntuacion);
+            
+             q=this.array[i];
+             pun=this.array[i].puntuacion;
+             veces+=1; //alert("BANZAI000000:"+i+" "+this.array[i].nombre+" PPPPP:"+pun);
+           }
+           else{
+             //alert("BANZAI222222:"+i+" "+this.array[i].nombre+" PPPPP:"+pun);
+              if(q.nombre==this.array[i].nombre){
+                pun+=this.array[i].puntuacion;
+                veces+=1;
+               
+              // alert("BANZAI1111111111:"+i+" "+this.array[i].nombre+" PPPPP:"+pun);
+              }          
+              else{
+                q.puntuacion=(pun/veces);
+                this.definitivo.push(q);
+                pun=0.0;
+                veces=0;
+                q={};//alert("BANZAI:"+this.definitivo[i].nombre+" PPPPP:"+this.definitivo[i].puntuacion);
+                      
+              }       
+           }                 
+          }//alert(this.definitivo[0].puntuacion);
+        if(par==1){
+ 
+          for( i=0;i<this.definitivo.length;i++){
+            for(j=0;j<(this.definitivo.length-1);j++){
+                if(this.definitivo[j].puntuacion<this.definitivo[j+1].puntuacion){
+                  aux=this.definitivo[j];
+                  this.definitivo[j]=this.definitivo[j+1];
+                  this.definitivo[j+1]=aux;
+                }           
+            }
+          }
+        }
+        else{
           
+            for (i=0; i<this.definitivo.length;i++) {
+               for (j=0;j<(this.definitivo.length-1); j++) {
+                if(this.definitivo[j].puntuacion > this.definitivo[j+1].puntuacion){
+                    aux= this.definitivo[j];
+                   this.definitivo[j] = this.definitivo[j+1];
+                   this.definitivo[j+1] = aux;
+                }
+              }
+            }
+            
+        }
+
+        this.recomendandoYo=false;
+        this.recomendandoIngre=false;
+        this.aleatorio=false;
+        this.ordenadoArray=false;
+        this.recomendandoGente=true;
+        this.recomendandoResto=false;
+    },
+        recomendarGente() {
+        this.array=[];
+        var data={user:this.user};
+        this.recomendandoYo=false;
+        this.recomendandoIngre=false;
+        this.aleatorio=false;
+        this.puntuando=false;
+        this.recomendandoResto=true;
+        this.ordenadoArray=false;
+        this.recomendandoGente=false;
+        
+    
+        this.$http.post('http://localhost:3000/gente', data).then(response => {
+
+          this.array=response.body;
 
         }, response => {
           alert(JSON.stringify(response.body));
         });
-      
-    },*/
+    },
 
     pedirAleatoria() {
 
@@ -565,7 +741,10 @@ methods: {
         this.recomendandoResto=false;
         this.recomendandoIngre=false;
         this.puntuando=false;
+        this.recomendandoGente=false;
         this.aleatorio= true;
+        this.ordenadoArray=false;
+        
         
     
         this.$http.post('http://localhost:3000/aleatoria', data).then(response => {
@@ -580,7 +759,7 @@ methods: {
 
 
     recomendarMio(){
-        
+        this.recomendandoGente=false;
         this.array=[];
         var data={user:this.user};
         this.recomendandoYo=true;
@@ -588,6 +767,7 @@ methods: {
         this.recomendandoIngre=false;
         this.puntuando=false;
         this.aleatorio= false;
+        this.ordenadoArray=false;
         
     
         this.$http.post('http://localhost:3000/mio', data).then(response => {
@@ -601,12 +781,20 @@ methods: {
     recomendarIngre(){
         
         this.array=[];
-        var data={user:this.user, ingrediente: this.e2, alergia: this.alergia};
         this.recomendandoYo=false;
-        this.recomendandoResto=false;
         this.recomendandoIngre=true;
         this.puntuando=false;
         this.aleatorio= false;
+        this.recomendandoGente=false; 
+        this.ordenadoArray=false;
+
+        var data={user:this.user, ingrediente: this.e2, alergia: this.alergia};
+        
+        this.recomendandoResto=false;
+        
+        
+        
+       
         
     
         this.$http.post('http://localhost:3000/ingrediente', data).then(response => {
@@ -639,11 +827,9 @@ methods: {
     cerrar_sesion() {
 
       this.bool_login = false;
-
-      this.listaPersonajes = [];
-      this.listaMapas = [];
-      this.listaPartidas = [];
-
+      this.e1=undefined;
+      this.puntuacion=undefined;
+      this.array = [];
       this.user = "";
       this.password = "";
 
