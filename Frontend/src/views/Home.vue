@@ -227,7 +227,7 @@
         <v-layout row wrap fill-height fill-width>
           <v-flex v-for="(item, index) in array" v-bind:key="index">
             <v-card
-              @click.native="pedirIngredientes(item)"
+              
               elevation="18"
               dark
               style="background: #3A1C71;
@@ -453,9 +453,10 @@ export default {
    arrayIngredientes:[],
    element:{},
    pizzerias:[],
-   ingredientes:['Queso Parmesano','Queso Cheddar','Queso Azul','Queso Cabra','Piña','Jamón York','Jamón Serrano','Jamón Cocido','Jamón Dulce',
-   'Jamón Asado','Aceitunas','Pollo','Champiñones','Cebolla','Beicon','Salchicha','Espinacas','Atún','Pimientos','Rúcula','Cecina',
-   'Chorizo','Guindilllas','Orégano','Anchoas','Jalapeños','Huevo','Ajo','Salsa Barbacoa','Berenjena','Calabacín','Maíz','Alcachofa'],
+   ingredientes:['Aceitunas','Ajo','Alcachofa','Anchoas','Atún','Beicon','Berenjena','Calabacín','Cebolla','Cecina','Champiñones','Chorizo','Espinacas',
+   'Guindilllas','Huevo','Jalapeños','Jamón Asado','Jamón Cocido','Jamón Dulce','Jamón Serrano','Jamón York','Maíz','Orégano','Pimientos','Piña','Pollo',
+   'Queso Azul','Queso Cabra','Queso Cheddar','Queso Parmesano','Rúcula','Salchicha','Salsa Barbacoa'],
+   
    items: [
           {
             position:"botttom",
@@ -641,43 +642,39 @@ methods: {
     },
     ordenarArray(par){
              
-     //   var par=1;
-                 var i=0;
-                 //alert(this.array[0].puntuacion);
-          var j=0;
-        
-          var aux;
-    
+          var i=0;                
+          var j=0;        
+          var aux;   
           var q={};
           this.definitivo=[];
           var pun=0.0;
           var veces=0;
           for( i=0;i<this.array.length;i++){
            if(JSON.stringify(q)=='{}'){
-             //alert(this.array[i].puntuacion);
+             
             
              q=this.array[i];
              pun=this.array[i].puntuacion;
-             veces+=1; //alert("BANZAI000000:"+i+" "+this.array[i].nombre+" PPPPP:"+pun);
+             veces+=1; 
            }
            else{
-             //alert("BANZAI222222:"+i+" "+this.array[i].nombre+" PPPPP:"+pun);
+            
               if(q.nombre==this.array[i].nombre){
                 pun+=this.array[i].puntuacion;
                 veces+=1;
                
-              // alert("BANZAI1111111111:"+i+" "+this.array[i].nombre+" PPPPP:"+pun);
+              
               }          
               else{
                 q.puntuacion=(pun/veces);
                 this.definitivo.push(q);
                 pun=0.0;
                 veces=0;
-                q={};//alert("BANZAI:"+this.definitivo[i].nombre+" PPPPP:"+this.definitivo[i].puntuacion);
+                q={};
                       
               }       
            }                 
-          }//alert(this.definitivo[0].puntuacion);
+          }
         if(par==1){
  
           for( i=0;i<this.definitivo.length;i++){
@@ -703,7 +700,6 @@ methods: {
             }
             
         }
-
         this.recomendandoYo=false;
         this.recomendandoIngre=false;
         this.aleatorio=false;
@@ -711,6 +707,7 @@ methods: {
         this.recomendandoGente=true;
         this.recomendandoResto=false;
     },
+
         recomendarGente() {
         this.array=[];
         var data={user:this.user};
@@ -804,6 +801,7 @@ methods: {
           alert(JSON.stringify(response.body));
         });
     },
+    
         pedirIngredientes(ite){
         
         var data={user:this.user, pizza: ite.nombre};     
